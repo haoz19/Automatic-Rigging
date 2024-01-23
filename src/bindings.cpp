@@ -122,6 +122,8 @@ PYBIND11_MODULE(pynocchio, m)
     py::class_<Attachment>(m, "Attachment")
         .def(py::init<>())
         .def_property_readonly("embedding", &Attachment::getEmbedding)
+        .def_property_readonly("full_weights", &Attachment::getFullWeights)
+        .def_property_readonly("bones_per_vertex", &Attachment::getBonesPerVertex)
         .def("deform", &Attachment::deform);
 
     m.def("auto_rig", &autorig);
