@@ -1,0 +1,69 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      label:
+        description: 'Additional label for release'
+        required: false
+        default: ''
+      prerelease:
+        description: 'Mark Release as Pre-Release'
+        required: false
+        default: 'false'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
+        python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
+
+    runs-on: ${{ matrix.os }}
+
+    name: Build with python ${{ matrix.python-version }} on ${{ matrix.os }}
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Get Library Version
+        id: get_version
+        run: |
+          lib_version=$(python setup.py --version)
+          echo "Library Version: $lib_version"
+          
+          echo ::set-output name=version::"$lib_version"
+          echo ::set-output name=v_version::"v$lib_version"
+
+      # run build command
+      - name: Build
+        run: |
+          echo $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE
+
+          pip install wheel
+          
+          if [ "$RUNNER_OS" == "macOS" ]; then
+             python setup.py bdist_wheel --plat-name="macosx_12_0_universal2"
+          else
+             python setup.py bdist_wheel
+          fi
+          
+          ls -la dist
+
+      # upload dist
+      - name: Upload binaries to release
+        if: ${{ github.event.inputs.publishReleases == 'true' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/*.whl
+          tag: ${{ steps.get_version.outputs.v_version }}
+          release_name: "Version ${{ steps.get_version.outputs.version }}"
+          body: "Prebuilt wheel packages version ${{ steps.get_version.outputs.version }}."
+          overwrite: true
+          file_glob: true
