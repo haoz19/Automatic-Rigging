@@ -30,6 +30,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Prerequisites
+        shell: bash
+        run: |
+          pip install setuptools
+          pip install wheel
+          pip install pybind11[global]
+
       - name: Get Library Version
         id: get_version
         shell: bash
@@ -49,9 +56,6 @@ jobs:
           
           git submodule update --init
           git submodule update --recursive
-
-          pip install wheel
-          pip install pybind11[global]
           
           if [ "$RUNNER_OS" == "macOS" ]; then
              python setup.py bdist_wheel --plat-name="macosx_12_0_universal2"
