@@ -4,9 +4,11 @@ import io
 import os
 import platform
 import re
+import shutil
 import subprocess
 import sys
 from distutils.version import LooseVersion
+from pathlib import Path
 
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
@@ -60,11 +62,11 @@ class CMakeBuild(build_ext):
         if platform.system() == "Darwin":
             print("running on osx")
             cmake_args += [
-                '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64"',
+                '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64',
                 '-DCMAKE_OSX_DEPLOYMENT_TARGET=12',
                 '-G Xcode'
             ]
-            build_args = []
+            build_args = ['--config', cfg]
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(
@@ -76,7 +78,21 @@ class CMakeBuild(build_ext):
                               cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args,
                               cwd=self.build_temp)
+
+        # post-process release
+        if platform.system() == "Darwin":
+
+            # move files from Debug / Release
+            release_dir = Path(self.build_lib, cfg)
+            parent_dir = release_dir.parent
+            for file in release_dir.iterdir():
+                if file.is_file():
+                    shutil.move(file, parent_dir)
+
+            os.removedirs(release_dir)
+
         print()  # Add an empty line for cleaner output
+        print(self.build_temp)
 
 
 this_directory = os.path.abspath(os.path.dirname(__file__))
