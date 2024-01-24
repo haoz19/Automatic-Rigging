@@ -4,6 +4,7 @@
 pynocchio.egg-info
 __pycache__
 *.pyd
+venv*
 
 build/
 dist/
