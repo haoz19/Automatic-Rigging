@@ -2,12 +2,12 @@
 
 import io
 import os
-import re
-import sys
 import platform
+import re
 import subprocess
-
+import sys
 from distutils.version import LooseVersion
+
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
@@ -29,7 +29,7 @@ class CMakeBuild(build_ext):
 
         if platform.system() == "Windows":
             cmake_version = LooseVersion(re.search(r'version\s*([\d.]+)',
-                                         out.decode()).group(1))
+                                                   out.decode()).group(1))
             if cmake_version < '3.1.0':
                 raise RuntimeError("CMake >= 3.1.0 is required on Windows")
 
@@ -55,6 +55,16 @@ class CMakeBuild(build_ext):
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
             build_args += ['--', '-j2']
+
+        # universal support
+        if platform.system() == "Darwin":
+            print("running on osx")
+            cmake_args += [
+                '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64"',
+                '-DCMAKE_OSX_DEPLOYMENT_TARGET=12',
+                '-G Xcode'
+            ]
+            build_args = []
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(
