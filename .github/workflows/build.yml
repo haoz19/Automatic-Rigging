@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
-        python-version: [ '3.10' ]
+        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
 
     runs-on: ${{ matrix.os }}
 
@@ -63,7 +63,7 @@ jobs:
 
       # upload dist
       - name: Upload binaries to release
-        if: ${{ github.event.inputs.publishReleases == 'true' }}
+        # if: ${{ github.event.inputs.publishReleases == 'true' }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
