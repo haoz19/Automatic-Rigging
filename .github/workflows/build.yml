@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
-        python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
+        python-version: [ '3.10' ]
 
     runs-on: ${{ matrix.os }}
 
@@ -32,6 +32,7 @@ jobs:
 
       - name: Get Library Version
         id: get_version
+        shell: bash
         run: |
           lib_version=$(python setup.py --version)
           echo "Library Version: $lib_version"
@@ -41,11 +42,16 @@ jobs:
 
       # run build command
       - name: Build
+        shell: bash
         run: |
           echo $GITHUB_WORKSPACE
           cd $GITHUB_WORKSPACE
+          
+          git submodule update --init
+          git submodule update --recursive
 
           pip install wheel
+          pip install pybind11[global]
           
           if [ "$RUNNER_OS" == "macOS" ]; then
              python setup.py bdist_wheel --plat-name="macosx_12_0_universal2"
