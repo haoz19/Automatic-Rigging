@@ -74,10 +74,15 @@ public:
 
     Mesh deform(const Mesh &mesh, const vector<Transform<> > &transforms) const;
 
+    vector<pair<double, int>> getFullWeights() { return fullWeights; }
+    vector<int> getBonesPerVertex() { return bonesPerVertex; }
+
 private:
     vector<Vector<double, -1> > weights;
     vector<vector<pair<int, double> > > nzweights; //sparse representation
     vector<Vector3> embedding;
+    vector<pair<double, int>> fullWeights;
+    vector<int> bonesPerVertex;
 };
 
 #endif

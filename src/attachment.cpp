@@ -161,6 +161,7 @@ Attachment::Attachment(const Mesh &mesh, const Skeleton &skeleton, const vector<
     LLTMatrix *Ainv = Am.factor();
     if(Ainv == NULL)
         return;
+    int totalIndex = 0;
 
     for(j = 0; j < bones; ++j) {
         vector<double> rhs(nv, 0.);
@@ -174,9 +175,13 @@ Attachment::Attachment(const Mesh &mesh, const Skeleton &skeleton, const vector<
             if(rhs[i] > 1.)
                 rhs[i] = 1.; //clip just in case
             if(rhs[i] > 1e-8)
+            {
                 nzweights[i].push_back(make_pair(j, rhs[i]));
+                ++totalIndex;
+            }
         }
     }
+    bonesPerVertex.resize(nv);
 
     for(i = 0; i < nv; ++i) {
         double sum = 0.;
@@ -186,7 +191,9 @@ Attachment::Attachment(const Mesh &mesh, const Skeleton &skeleton, const vector<
         for(j = 0; j < (int)nzweights[i].size(); ++j) {
             nzweights[i][j].second /= sum;
             weights[i][nzweights[i][j].first] = nzweights[i][j].second;
+            fullWeights.push_back(make_pair(nzweights[i][j].second, j));
         }
+        bonesPerVertex[i] = (int)nzweights[i].size();
     }
 
     delete Ainv;
