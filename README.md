@@ -20,12 +20,8 @@ On Linux
 
 Installation
 ------------
+    python setup.py install
 
-Install **pynocchio** with pip:
-
-
-
-    pip install pynocchio
 
 
 
