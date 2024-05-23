@@ -102,8 +102,8 @@ public:
     Transform() : scale(1.) {}
     explicit Transform(const Real &inScale) : scale(inScale) {}
     explicit Transform(const Vec &inTrans) : scale(1.), trans(inTrans) {}
-    Transform(const Quaternion<Real> &inRot, Real inScale = Real(1.), Vec inTrans = Vec()) : rot(inRot), scale(inScale), trans(inTrans) {}
-    //explicit Transform(const Quaternion<Real> &inRot, Vec &inTrans = Vec(), Real inScale = Real(1.)) : rot(inRot), scale(inScale), trans(inTrans) {}
+    //Transform(const Quaternion<Real> &inRot, Real inScale = Real(1.), Vec inTrans = Vec()) : rot(inRot), scale(inScale), trans(inTrans) {}
+    explicit Transform(const Quaternion<Real> &inRot, Vec &inTrans, Real inScale = Real(1.)) : rot(inRot), scale(inScale), trans(inTrans) {}
     Transform(const Transform &t) : rot(t.rot), scale(t.scale), trans(t.trans) {}
     
     Transform operator*(const Transform &t) const { return Transform(rot * t.rot, scale * t.scale, trans + rot * (scale * t.trans)); }

@@ -138,7 +138,6 @@ PYBIND11_MODULE(pynocchio, m)
         .def_property_readonly("embedding", &Attachment::getEmbedding)
         .def_property_readonly("weights", &Attachment::getWeights)
         .def_property_readonly("bones_per_vertex", &Attachment::getBonesPerVertex)
-        .def("getAllWeights", &Attachment::getAllWeights)
         .def("deform", &Attachment::deform);
 
     m.def("auto_rig", &autorig);

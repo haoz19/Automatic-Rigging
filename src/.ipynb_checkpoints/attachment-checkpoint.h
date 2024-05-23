@@ -23,13 +23,6 @@
 #include "skeleton.h"
 #include "transform.h"
 
-//hao
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <vector>
-
-namespace py = pybind11;
-
 class VisibilityTester
 {
 public:
@@ -77,31 +70,13 @@ public:
         const VisibilityTester *tester, double initialHeatWeight=1.);
 
     Vector<double, -1> getWeights(int i) const { return this->weights[i]; }
+    const vector<Vector<double, -1>>& getAllWeights() const { return this->weights; }
     vector<Vector3> getEmbedding() const { return embedding; };
 
     Mesh deform(const Mesh &mesh, const vector<Transform<> > &transforms) const;
 
-    //vector<pair<double, int>> getFullWeights() { return fullWeights; }
+    vector<pair<double, int>> getFullWeights() { return fullWeights; }
     vector<int> getBonesPerVertex() { return bonesPerVertex; }
-    
-    py::array_t<double> getAllWeights() const {
-        if (weights.empty()) return py::array_t<double>(0);
-        
-        size_t num_vertices = weights.size();
-        size_t num_bones = weights.front().size(); // Assuming all weights vectors are of the same size
-
-        // Creating a NumPy array
-        auto result = py::array_t<double>({num_vertices, num_bones});
-        auto r = result.mutable_unchecked<2>(); // To modify the NumPy array
-
-        for (size_t i = 0; i < num_vertices; ++i) {
-            for (size_t j = 0; j < num_bones; ++j) {
-                r(i, j) = weights[i][j]; // Directly assigning values
-            }
-        }
-
-        return result;
-    }
 
 private:
     vector<Vector<double, -1> > weights;
