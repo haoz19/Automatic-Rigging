@@ -20,6 +20,7 @@ On Linux
 
 Installation
 ------------
+    cd <folder>
     pip install .
 
 
