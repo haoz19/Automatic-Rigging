@@ -20,7 +20,8 @@ On Linux
 
 Installation
 ------------
-    python setup.py install
+    pip install .
+
 
 
 
