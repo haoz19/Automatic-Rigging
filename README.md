@@ -22,6 +22,8 @@ Installation
 ------------
     cd <folder>
     pip install .
+    
+*Please give me a star and check my Project [MagicPose4D](https://github.com/haoz19/MagicPose4D) if you find this repository helpful!*
 
 
 
